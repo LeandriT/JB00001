@@ -1,0 +1,30 @@
+create database test;
+CREATE TABLE public.persona
+(
+  id integer NOT NULL DEFAULT nextval('persona_id_seq'::regclass),
+  apellidos character varying(255),
+  nombres character varying(255),
+  CONSTRAINT persona_pkey PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE public.persona
+  OWNER TO postgres;
+
+CREATE TABLE public.telefono
+(
+  id integer NOT NULL DEFAULT nextval('telefono_id_seq'::regclass),
+  numero character varying(255),
+  tipo character varying(255),
+  idpersona integer,
+  CONSTRAINT telefono_pkey PRIMARY KEY (id),
+  CONSTRAINT fk7hwo2i4mowklw7a32ebfm6ev9 FOREIGN KEY (idpersona)
+      REFERENCES public.persona (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE public.telefono
+  OWNER TO postgres;

@@ -1,0 +1,7 @@
+1. Paso Download Wildfly
+2. Ir a wildfly-10.0.0.Final\bin
+3. add_user.bat
+4. standalone.bat
+5. Abre otra consola digita jboss-cli.bat --connect
+6. module add --name=org.postgresql --resources=C:\JAVA\Servidores\drivers\postgresql-42.2.5.jar --dependencies=javax.api,javax.transaction.api
+7. /subsystem=datasources/jdbc-driver=postgres:add(driver-name="postgres",driver-module-name="org.postgresql",driver-class-name=org.postgresql.Driver)
