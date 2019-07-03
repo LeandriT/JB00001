@@ -1,0 +1,268 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+ <h:head>
+  <title>EJEMPLO EJB</title>
+  <f:facet name="middle">
+
+   <h:outputStylesheet name="stylesheets/bootstrap.min.css" />
+
+   <!-- Theme style -->
+   <h:outputStylesheet name="stylesheets/AdminLTE.min.css" />
+   <!-- AdminLTE Skins. Choose a skin from the css/skins
+      folder instead of downloading all of them to reduce the load. -->
+   <h:outputStylesheet name="stylesheets/_all-skins.min.css" />
+  </f:facet>
+  <style type="text/css">   
+   .ui-datatable {
+    margin-bottom:20px;
+   }
+
+   .ui-datatable-frozenlayout-left {
+    width:20%;
+   }
+
+   .ui-datatable-frozenlayout-right {
+    width:80%;
+   }
+  </style>
+ </h:head>
+ <h:body>
+  <h:form id="frm">
+   <div class="ui-fluid">
+    <div class="ui-g">
+     <div class="ui-g-12" style="text-align: center">
+      <h2>EJEMPLO EJB</h2>
+     </div>
+    </div>
+    <p:growl id="msg" />
+    <div class="ui-g text-center">
+
+    </div>
+    <div class="ui-g">
+     <div class="ui-g-12 ui-md-6 ui-lg-2">
+      <p:outputLabel value="Nombres: " style="font-weight:bold"/>
+     </div>
+     <div class="ui-g-12 ui-md-6 ui-lg-2">
+      <p:inputText id="txtNombre" value="#{controllerEjemplo.usNombre}"
+                   required="true" requiredMessage="Campo nombre requerido."
+                   maxlength="30">
+       <p:keyFilter  regEx="/[A-Za-z.,ñÑáéíóúÁÉÍÓÚ_\-¿? ]/" />
+       <p:ajax event="change" process="@this"/>
+      </p:inputText>
+     </div>
+     <div class="ui-g-12 ui-md-6 ui-lg-2">
+      <p:outputLabel value="Apellidos: " style="font-weight:bold"/>
+     </div>
+     <div class="ui-g-12 ui-md-6 ui-lg-2">
+      <p:inputText id="txtApellido" value="#{controllerEjemplo.usApellidos}" required="true"
+                   requiredMessage="Campo Apellido Requerido." maxlength="30">
+       <p:keyFilter  regEx="/[A-Za-z.,ñÑáéíóúÁÉÍÓÚ_\-¿? ]/" />
+       <p:ajax event="change" process="@this"/>
+      </p:inputText>
+     </div>
+    </div>
+    <div class="ui-g">
+     <div class="ui-g-12 ui-md-6 ui-lg-2">
+      <p:outputLabel value="Teléfono: " style="font-weight:bold"/>
+     </div>
+     <div class="ui-g-12 ui-md-6 ui-lg-2">
+      <p:inputText value="#{controllerEjemplo.nro}" id="telf" maxlength="10"
+                   required="true" requiredMessage="El campo Télefono es requerido.">
+       <p:keyFilter  regEx="/[0-9]/" />
+      </p:inputText>
+     </div>
+     <div class="ui-g-12 ui-md-6 ui-lg-2">
+      <p:outputLabel value="Tipo: " style="font-weight:bold"/>
+     </div>
+     <div class="ui-g-12 ui-md-6 ui-lg-2">
+      <p:selectOneMenu value="#{controllerEjemplo.tipo}" id="cbxTipo"
+                       required="true" requiredMessage="El campo Tipo es requerido.">
+       <f:selectItem itemLabel="CELULAR" itemValue="CELULAR"/>
+       <f:selectItem itemLabel="TELEFONO" itemValue="TELEFONO"/>
+      </p:selectOneMenu>
+     </div>
+     <div class="ui-g-12 ui-md-6 ui-lg-2">
+      <p:commandButton value="Agregar" action="#{controllerEjemplo.agregar()}"
+                       update="telefonos, cbxTipo, telf, msg" process="@this, cbxTipo, telf"
+                       icon="fa fa-plus" styleClass="blockLoad">
+      </p:commandButton>
+     </div>
+    </div>
+    <div class="ui-g">
+     <div class="ui-g-12 ui-md-6 ui-lg-2">
+      <p:commandButton action="#{controllerEjemplo.guardarPersona()}"
+                       value="Guardar" icon="fa fa-save" styleClass="blockLoad"
+                       process="@this, txtNombre, txtApellido"
+                       update="frm"/>
+     </div>
+     <div class="ui-g-12 ui-md-6 ui-lg-2">
+      <p:commandButton action="#{controllerEjemplo.recargarDatos()}"
+                       value="Recargar" icon="fa fa-refresh" styleClass="blockLoad"
+                       process="@this" immediate="true"/>
+     </div>
+     <div class="ui-g-12 ui-md-6 ui-lg-2">
+      <p:commandButton action="#{controllerEjemplo.buscarPersona()}"
+                       value="Buscar" icon="fa fa-refresh" styleClass="blockLoad"
+                       process="@this, txtNombre" update="frm"/>
+     </div>
+    </div>
+   </div>
+   <div class="ui-g">
+    <div class="ui-g-12 ui-md-6 ui-lg-12">
+     <p:dataTable value="#{controllerEjemplo.lstTelefono}" var="telf" id="telefonos"
+                  emptyMessage="Sin Registros"
+                  rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} 
+                  {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" 
+                  currentPageReportTemplate="(Registros: {startRecord} - {endRecord}, Página: {currentPage}/{totalPages})"
+                  paginatorPosition="bottom" sortMode="multiple" reflow="true" rowIndexVar="index">
+      <p:column>
+       <f:facet name="header">
+        <h:outputText value="Número"/>
+       </f:facet>
+       <p:outputLabel value="#{telf.numero}"/>
+      </p:column>
+      <p:column>
+       <f:facet name="header">
+        <h:outputText value="Tipo"/>
+       </f:facet>
+       <p:outputLabel value="#{telf.tipo}"/>
+      </p:column>
+      <p:column style="text-align: center">
+       <f:facet name="header">
+        <h:outputText value="Acciones"/>
+       </f:facet>
+       <p:commandButton action="#{controllerEjemplo.eliminarTelefono(telf)}"
+                        process="@this" update="telefonos, frm:msg" icon="fa fa-trash"
+                        styleClass="blockLoad"/>
+      </p:column>
+     </p:dataTable>
+     <br/>
+     <p:dataTable value="#{controllerEjemplo.lstPersona}" var="persona"
+                  emptyMessage="Sin Registros"
+                  rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} 
+                  {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" 
+                  currentPageReportTemplate="(Registros: {startRecord} - {endRecord}, Página: {currentPage}/{totalPages})"
+                  paginatorPosition="bottom" sortMode="multiple" reflow="true" rowIndexVar="index">
+      <p:column>
+       <f:facet name="header">
+        <h:outputText value="Nombre"/>
+       </f:facet>
+       <p:outputLabel value="#{persona.nombre}"/>
+      </p:column>
+      <p:column>
+       <f:facet name="header">
+        <h:outputText value="Apellidos"/>
+       </f:facet>
+       <p:outputLabel value="#{persona.apellido}"/>
+      </p:column>
+      <p:column>
+       <f:facet name="header">
+        <h:outputText value="Teléfonos"/>
+       </f:facet>
+       <p:outputLabel value="#{persona.telefonoList.size()}"/>
+      </p:column>
+      <p:column style="text-align: center">
+       <f:facet name="header">
+        <h:outputText value="Acciones"/>
+       </f:facet>
+       <p:commandButton action="#{controllerEjemplo.cargarDatos(persona)}"
+                        rendered="#{persona.telefonoList.size()!=0}"
+                        icon="fa fa-plane" styleClass="blockLoad"
+                        process="@this"/>&nbsp;
+       <p:commandButton action="#{controllerEjemplo.cargarDatosEditar(persona)}"
+                        icon="fa fa-pencil" styleClass="blockLoad"
+                        process="@this"/>&nbsp;
+       <p:commandButton action="#{controllerEjemplo.eliminarDatos(persona)}"
+                        icon="fa fa-trash" styleClass="blockLoad"
+                        process="@this"/>
+
+      </p:column>
+     </p:dataTable>
+    </div>
+   </div>
+  </h:form>
+  <p:dialog header="Ver Teléfonos" widgetVar="dlgVer" id="dlgVer" minHeight="80" modal="true"
+            responsive="true" draggable="true" resizable="false">
+   <h:form id="frmVer" onkeypress="if
+             (event.keyCode == 13) {
+      return false;
+     }">
+    <br/>
+    <div class="ui-g">
+     <div class="ui-g-2">
+      <p:outputLabel value="Nombres: " style="font-weight:bold"/>
+     </div>
+     <div class="ui-g-10">
+      <h:outputText value="#{controllerEjemplo.personaVer.nombre} #{controllerEjemplo.personaVer.apellido}"/>
+     </div>
+    </div>
+    <br/>
+    <p:dataTable value="#{controllerEjemplo.personaVer.telefonoList}" var="telf" rowIndexVar="index"
+                 scrollable="true" scrollHeight="150">
+     <f:facet name="header">
+      Teléfonos
+     </f:facet>
+     <p:column>
+      <f:facet name="header">
+       <h:outputText value="Nro"/>
+      </f:facet>
+      <p:outputLabel value="#{index+1}"/>
+     </p:column>
+     <p:column>
+      <f:facet name="header">
+       <h:outputText value="Número"/>
+      </f:facet>
+      <p:outputLabel value="#{telf.numero}"/>
+     </p:column>
+     <p:column>
+      <f:facet name="header">
+       <h:outputText value="Tipo"/>
+      </f:facet>
+      <p:outputLabel value="#{telf.tipo}"/>
+     </p:column>
+    </p:dataTable>
+    <br/>
+   </h:form>
+  </p:dialog>
+  <p:dialog header="Editar Persona" widgetVar="dlgEditarPersona" id="dlgEditarPersona" minHeight="80" modal="true"
+            responsive="true" draggable="true" resizable="false">
+   <h:form id="frmEditarPersona" onkeypress="if
+             (event.keyCode == 13) {
+      return false;
+     }">
+    <br/>
+    <div class="ui-fluid">
+     <div class="ui-g">
+      <div class="ui-g-2">
+       <p:outputLabel value="Nombres: " style="font-weight:bold"/>
+      </div>
+      <div class="ui-g-2">
+       <p:inputText value="#{controllerEjemplo.usNombre}"/>
+      </div>
+      <div class="ui-g-2">
+       <p:outputLabel value="Apellidos: " style="font-weight:bold"/>
+      </div>
+      <div class="ui-g-2">
+       <p:inputText value="#{controllerEjemplo.usApellidos}"/>
+      </div>
+      <div class="ui-g-2">
+       <p:commandButton action="#{controllerEjemplo.editarPersona()}"
+                        value="Editar" icon="fa fa-pencil" onclick="PF('dlgEditarPersona').hide()"
+                        styleClass="blockLoad"/>
+      </div>
+     </div>
+    </div>
+    <br/>
+   </h:form>
+  </p:dialog>
+  <p:blockUI block="frm" trigger="@(.blockLoad)" >
+   <h:outputText value="Espere un momento por favor..." style="white-space: nowrap;"/> <br/>
+   <h:graphicImage name="/images/ajaxloading.gif"/>
+  </p:blockUI>
+ </h:body>
+</html>
+<!--PARA DEPLOY LE HAGO RUN NO MAS??-->
